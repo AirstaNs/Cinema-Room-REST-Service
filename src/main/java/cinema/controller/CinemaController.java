@@ -37,4 +37,10 @@ public class CinemaController {
     public ResponseEntity<Map<String,Seat>> returnTicket(@RequestBody Token token) {
         return new ResponseEntity<>(roomService.returnTicket(token), HttpStatus.OK);
     }
+    @PostMapping(path = "/stats")
+    @ResponseBody
+    public String getStats(@RequestParam(value = "password", required = false) String password) {
+        String adminPass = "super_secret";
+       return adminPass.equals(password) ? "ACCEPTED" : "DENY";
+    }
 }
