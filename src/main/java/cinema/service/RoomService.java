@@ -38,40 +38,42 @@ public class RoomService {
         return lists;
     }
 
-    public Ticket buyTicket(Seat seat) throws SeatOutOfBoundsException,SeatNotFoundException,EmptyTicketsException {
+    public Ticket buyTicket(Seat seat) throws SeatOutOfBoundsException, SeatNotFoundException, EmptyTicketsException {
         this.checkTicketsNull();
-      Ticket ticket =  new Ticket(new Token(UUID.randomUUID()),seat);
+        Seat getSeat = takeSeatOrThrows(seat);
+        Ticket ticket = new Ticket(new Token(UUID.randomUUID()), getSeat);
         System.out.println(ticket.getToken().getToken().toString());
         tickets.add(ticket);
 
-//        Seat takeSeat = seats.stream()
-//                             .filter(seatRoom -> seatRoom.equals(seat))
-//                             .findFirst()
-//                             .orElseThrow(SeatNotFoundException::new);
-//
-//        this.takeSeatOrThrows(takeSeat);
+
         return ticket;
     }
 
     public Map<String, Seat> returnTicket(Token token) {
         this.checkTicketsNull();
         Ticket removedTicket = tickets.stream()
-                           .filter(ticket -> ticket.getToken().equals(token))
-                           .findFirst()
-                           .orElseThrow(EmptyTicketsException::new);
+                                      .filter(ticket -> ticket.getToken().equals(token))
+                                      .findFirst()
+                                      .orElseThrow(EmptyTicketsException::new);
         tickets.remove(removedTicket);
-        return Map.of("returned_ticket",removedTicket.getSeat());
+        return Map.of("returned_ticket", removedTicket.getSeat());
     }
 
-    private void checkTicketsNull() throws EmptyTicketsException{
-        if(tickets==null) throw new EmptyTicketsException();
+    private void checkTicketsNull() throws EmptyTicketsException {
+        if (tickets == null) throw new EmptyTicketsException();
     }
-    private void takeSeatOrThrows(Seat seat) throws SeatOccuredException {
-        if (!seat.isAvailable()) {
+
+    private Seat takeSeatOrThrows(Seat seat) throws SeatOccuredException, SeatNotFoundException {
+        Seat takeSeat = seats.stream()
+                             .filter(seatRoom -> seatRoom.equals(seat))
+                             .findFirst()
+                             .orElseThrow(SeatNotFoundException::new);
+
+        if (!takeSeat.isAvailable()) {
             throw new SeatOccuredException();
-        } else {
-            seat.setAvailable(false);
-        }
+        } else {takeSeat.setAvailable(false);}
+
+        return takeSeat;
     }
 
 
