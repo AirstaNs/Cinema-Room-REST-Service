@@ -23,11 +23,11 @@ public class RoomService {
     private final Set<Ticket> tickets;
 
     public RoomService() {
-        this.seats = init();
+        this.seats = fillSeat();
         tickets = new HashSet<>();
     }
 
-    private List<Seat> init() {
+    private List<Seat> fillSeat() {
         List<Seat> lists = new ArrayList<>();
         int start = 1;
         for (int row = start; row <= totalRows; row++) {
