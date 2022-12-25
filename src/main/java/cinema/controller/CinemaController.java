@@ -1,5 +1,6 @@
 package cinema.controller;
 
+import cinema.exception.LoginWrongException;
 import cinema.model.Ticket;
 import cinema.model.Token;
 import cinema.service.RoomService;
@@ -32,15 +33,21 @@ public class CinemaController {
     public ResponseEntity<Ticket> buySeats(@RequestBody Seat seat) {
         return new ResponseEntity<>(roomService.buyTicket(seat), HttpStatus.OK);
     }
+
     @PostMapping(path = "/return", consumes = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String,Seat>> returnTicket(@RequestBody Token token) {
+    public ResponseEntity<Map<String, Seat>> returnTicket(@RequestBody Token token) {
         return new ResponseEntity<>(roomService.returnTicket(token), HttpStatus.OK);
     }
+
     @PostMapping(path = "/stats")
     @ResponseBody
-    public String getStats(@RequestParam(value = "password", required = false) String password) {
+    public ResponseEntity<RoomService.Statistics> getStats(
+            @RequestParam(value = "password", required = false) String password) {
         String adminPass = "super_secret";
-       return adminPass.equals(password) ? "ACCEPTED" : "DENY";
+        if (adminPass.equals(password)) {
+            return new ResponseEntity<>(roomService.getStatistics(), HttpStatus.OK);
+        } else {throw new LoginWrongException();}
     }
+
 }
