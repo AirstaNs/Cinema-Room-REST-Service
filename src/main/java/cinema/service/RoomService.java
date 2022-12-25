@@ -1,14 +1,18 @@
 package cinema.service;
 
+import cinema.exception.EmptyTicketsException;
 import cinema.exception.SeatNotFoundException;
 import cinema.exception.SeatOutOfBoundsException;
 import cinema.model.Seat;
 import cinema.exception.SeatOccuredException;
+import cinema.model.Ticket;
+import cinema.model.Token;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class RoomService {
@@ -17,9 +21,12 @@ public class RoomService {
 
     @JsonIgnore
     public final List<Seat> seats;
+    @JsonIgnore
+    private final List<Ticket> tickets;
 
     public RoomService() {
         this.seats = init();
+        tickets = new ArrayList<>();
     }
 
     private List<Seat> init() {
@@ -45,14 +52,22 @@ public class RoomService {
         return seats;
     }
 
-    public Seat takeSeat(Seat seat) throws SeatOutOfBoundsException {
-        return seats
-                .stream()
-                .filter(seatRoom -> seatRoom.equals(seat))
-                .findFirst()
-                .orElseThrow(SeatNotFoundException::new);
-    }
+    public Ticket buyTicket(Seat seat) throws SeatOutOfBoundsException,SeatNotFoundException,EmptyTicketsException {
+        this.checkTicketsEmpty();
+      Ticket ticket =  new Ticket(new Token(UUID.randomUUID()),seat);
+      tickets.add(ticket);
 
+//        Seat takeSeat = seats.stream()
+//                             .filter(seatRoom -> seatRoom.equals(seat))
+//                             .findFirst()
+//                             .orElseThrow(SeatNotFoundException::new);
+//
+//        this.takeSeatOrThrows(takeSeat);
+        return ticket;
+    }
+    private void checkTicketsEmpty() throws EmptyTicketsException{
+        if(tickets==null|| tickets.isEmpty()) throw new EmptyTicketsException();
+    }
     private void takeSeatOrThrows(Seat seat) throws SeatOccuredException {
         if (!seat.isAvailable()) {
             throw new SeatOccuredException();
@@ -60,5 +75,4 @@ public class RoomService {
             seat.setAvailable(false);
         }
     }
-
 }
