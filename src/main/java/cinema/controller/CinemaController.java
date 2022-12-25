@@ -32,7 +32,7 @@ public class CinemaController {
     public ResponseEntity<Ticket> buySeats(@RequestBody Seat seat) {
         return new ResponseEntity<>(roomService.buyTicket(seat), HttpStatus.OK);
     }
-    @DeleteMapping(path = "/return", consumes = "application/json")
+    @PostMapping(path = "/return", consumes = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String,Seat>> returnTicket(@RequestBody Token token) {
         return new ResponseEntity<>(roomService.returnTicket(token), HttpStatus.OK);
