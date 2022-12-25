@@ -89,4 +89,32 @@ public class RoomService {
         return seats;
     }
 
+
+    public class Statistics {
+
+        private int income = 0;
+
+        @JsonProperty("current_income")
+        public int getIncome() {
+            return income;
+        }
+
+        @JsonProperty("number_of_available_seats")
+        public int getAvailableSeats() {
+            return seats.size() - tickets.size();
+        }
+
+        @JsonProperty("number_of_purchased_tickets")
+        public int getPurchasedTickets() {
+            return tickets.size();
+        }
+
+        private void addIncome(int income) {
+            this.income += income;
+        }
+
+        private void decreaseIncome(int income) {
+            this.income -= income;
+        }
+    }
 }
