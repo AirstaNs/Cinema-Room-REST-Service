@@ -1,5 +1,6 @@
 package cinema.service;
 
+import cinema.exception.SeatNotFoundException;
 import cinema.exception.SeatOutOfBoundsException;
 import cinema.model.Seat;
 import cinema.exception.SeatOccuredException;
@@ -15,17 +16,18 @@ public class RoomService {
     public static final int totalColumns = 9;
 
     @JsonIgnore
-    public  final List<Seat> seats;
+    public final List<Seat> seats;
 
     public RoomService() {
         this.seats = init();
     }
-    private List<Seat>  init(){
+
+    private List<Seat> init() {
         List<Seat> lists = new ArrayList<>();
         int start = 1;
-        for (int row = start; row <=totalRows ; row++) {
-            for (int column = start; column <=totalColumns ; column++) {
-                lists.add(new Seat(row,column));
+        for (int row = start; row <= totalRows; row++) {
+            for (int column = start; column <= totalColumns; column++) {
+                lists.add(new Seat(row, column));
             }
         }
         return lists;
@@ -39,20 +41,22 @@ public class RoomService {
         return totalColumns;
     }
 
-    public List<Seat> getAvailableSeats(){
+    public List<Seat> getAvailableSeats() {
         return seats;
     }
-    public Seat takeSeat(Seat seat) throws SeatOutOfBoundsException {
-        Seat seat2 = seats.stream()
-                         .filter(seat1 -> seat1.equals(seat))
-                         .findFirst().get();
 
-        return seat2;
+    public Seat takeSeat(Seat seat) throws SeatOutOfBoundsException {
+        return seats
+                .stream()
+                .filter(seatRoom -> seatRoom.equals(seat))
+                .findFirst()
+                .orElseThrow(SeatNotFoundException::new);
     }
-    private void takeSeatOrThrows( Seat seat) throws  SeatOccuredException{
-        if (!seat.isAvailable()){
-            throw  new SeatOccuredException();
-        }else {
+
+    private void takeSeatOrThrows(Seat seat) throws SeatOccuredException {
+        if (!seat.isAvailable()) {
+            throw new SeatOccuredException();
+        } else {
             seat.setAvailable(false);
         }
     }

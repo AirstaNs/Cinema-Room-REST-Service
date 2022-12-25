@@ -1,10 +1,10 @@
 package cinema.exception;
 
 public class ExceptionMessage {
-    private  String error;
+    private String error;
 
     public ExceptionMessage(String error) {
-        this.error =error;
+        this.error = error;
     }
 
     public String getError() {
