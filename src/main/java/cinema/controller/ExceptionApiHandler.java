@@ -34,4 +34,10 @@ public class ExceptionApiHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionMessage(exception.getMessage()));
     }
+    @ExceptionHandler(LoginWrongException.class)
+    public ResponseEntity<ExceptionMessage> loginWrongException(LoginWrongException exception) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ExceptionMessage(exception.getMessage()));
+    }
 }
