@@ -8,6 +8,7 @@ import cinema.exception.SeatOccuredException;
 import cinema.model.Ticket;
 import cinema.model.Token;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,10 +22,13 @@ public class RoomService {
     public final List<Seat> seats;
     @JsonIgnore
     private final Set<Ticket> tickets;
+    @JsonIgnore
+    private final Statistics statistics;
 
     public RoomService() {
         this.seats = fillSeat();
         tickets = new HashSet<>();
+        this.statistics = new Statistics();
     }
 
     private List<Seat> fillSeat() {
@@ -45,7 +49,7 @@ public class RoomService {
         System.out.println(ticket.getToken().getToken().toString());
         tickets.add(ticket);
 
-
+        statistics.addIncome(ticket.getSeat().getPrice());
         return ticket;
     }
 
@@ -56,7 +60,12 @@ public class RoomService {
                                       .findFirst()
                                       .orElseThrow(EmptyTicketsException::new);
         tickets.remove(removedTicket);
+        statistics.decreaseIncome(removedTicket.getSeat().getPrice());
         return Map.of("returned_ticket", removedTicket.getSeat());
+    }
+
+    public Statistics getStatistics() {
+        return statistics;
     }
 
     private void checkTicketsNull() throws EmptyTicketsException {
